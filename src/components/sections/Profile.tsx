@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Profile() {
   return (
     <div
-      className="bg-default box-border content-stretch flex gap-[10px] h-[144px] items-start justify-center p-[12px] relative rounded-[24px] shrink-0 w-[424px]"
+      className="bg-default box-border content-stretch flex gap-[10px] min-h-[144px] items-start justify-center p-[12px] relative rounded-[24px] shrink-0 max-w-[424px]"
       data-name="Profile"
       data-node-id="278:148"
     >
@@ -17,6 +17,7 @@ export default function Profile() {
           src="/profile-image.png"
           alt="Profile picture"
           fill
+          sizes="120px"
           className="object-cover rounded-[12px]"
           priority
         />
@@ -34,7 +35,7 @@ export default function Profile() {
           <p className="leading-[20px]">Merhaba!</p>
         </div>
         <div
-          className="font-instrument-serif font-normal leading-[32px] not-italic relative shrink-0 text-[32px] w-full"
+          className="font-instrument-serif font-normal leading-[32px] not-italic relative shrink-0 text-[20px] sm:text-[32px] w-full"
           data-node-id="I278:148;271:93"
         >
           <p className="mb-0">I am Ibrahim Uzun,</p>

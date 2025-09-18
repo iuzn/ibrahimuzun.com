@@ -1,0 +1,57 @@
+---
+globs: *.ts,*.tsx
+description: Firebase integration rules and best practices
+---
+
+# Firebase Integration Rules
+
+## Configuration
+
+- Firebase config must be stored in environment variables (`.env.local`)
+- Never commit Firebase credentials to version control
+- Use `NEXT_PUBLIC_` prefix for client-side Firebase variables
+
+## File Structure
+
+- Firebase initialization: `src/lib/firebase.ts`
+- Firebase exports: `src/lib/index.ts`
+- No FirebaseProvider component - Firebase initializes automatically
+
+## Error Handling
+
+- Firebase errors should be logged to console only
+- Never show Firebase errors to users
+- Handle Firebase errors gracefully without breaking the app
+
+## Naming Convention for Firebase Triggers
+
+When creating Firebase Cloud Functions or triggers, use this naming pattern:
+
+### Function Names
+
+```
+{action}-{resource}-{trigger}
+```
+
+### Examples
+
+- `onUserCreate-auth` - User creation trigger
+- `onOrderUpdate-firestore` - Order update trigger
+- `sendWelcomeEmail-auth` - Welcome email function
+- `cleanupOldData-scheduled` - Scheduled cleanup function
+
+### Trigger Types
+
+- `auth` - Authentication triggers (create, delete)
+- `firestore` - Firestore document triggers (create, update, delete)
+- `storage` - Cloud Storage triggers
+- `scheduled` - Scheduled functions (cron jobs)
+- `http` - HTTP callable functions
+
+## Best Practices
+
+- Initialize Firebase once in `lib/firebase.ts`
+- Export all Firebase services from `lib/index.ts`
+- Use environment variables for all configuration
+- Handle errors silently in production
+- Test Firebase functions locally before deployment
