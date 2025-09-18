@@ -35,7 +35,7 @@ export default function Profile() {
           <p className="leading-[20px]">Merhaba!</p>
         </div>
         <div
-          className="font-instrument-serif font-normal leading-[32px] not-italic relative shrink-0 text-[20px] sm:text-[32px] w-full"
+          className="font-instrument-serif font-normal leading-[24px] sm:leading-[32px] not-italic relative shrink-0 text-[24px] sm:text-[32px] w-full"
           data-node-id="I278:148;271:93"
         >
           <p className="mb-0">I am Ibrahim Uzun,</p>
