@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+/* Ana Renk Skalası - Light Mode (50 en açık → 950 en koyu) */
+:root {
+  /* Ana renk skalası */
+  --color-50: #fafafa;
+  --color-100: #f5f5f5;
+  --color-200: #e5e5e5;
+  --color-300: #d4d4d4;
+  --color-400: #a3a3a3;
+  --color-500: #737373;
+  --color-600: #525252;
+  --color-700: #404040;
+  --color-800: #262626;
+  --color-900: #171717;
+  --color-950: #0a0a0a;
+
+  /* Marka rengi - I serisi (Teal) */
+  --color-i-50: #f0fdfa;
+  --color-i-100: #ccfbf1;
+  --color-i-200: #99f6e4;
+  --color-i-300: #5eead4;
+  --color-i-400: #2dd4bf;
+  --color-i-500: #14b8a6;
+  --color-i-600: #0d9488;
+  --color-i-700: #0f766e;
+  --color-i-800: #115e59;
+  --color-i-900: #134e4a;
+  --color-i-950: #042f2e;
+
+  /* Default renkler */
+  --color-default: #ffffff;
+  --color-default-inverse: #000000;
+
+  /* Eski değişkenler - uyumluluk için */
+  --background: var(--color-default);
+  --foreground: var(--color-900);
+}
+
+/* Dark Mode - Renk skalası tersine çevrilir (950 en açık → 50 en koyu) */
+.dark {
+  /* Ana renk skalası - Dark Mode */
+  --color-50: #0a0a0a;
+  --color-100: #171717;
+  --color-200: #262626;
+  --color-300: #404040;
+  --color-400: #525252;
+  --color-500: #737373;
+  --color-600: #a3a3a3;
+  --color-700: #d4d4d4;
+  --color-800: #e5e5e5;
+  --color-900: #f5f5f5;
+  --color-950: #fafafa;
+
+  /* Marka rengi - Dark Mode (I serisi daha parlak) */
+  --color-i-50: #042f2e;
+  --color-i-100: #134e4a;
+  --color-i-200: #115e59;
+  --color-i-300: #0f766e;
+  --color-i-400: #0d9488;
+  --color-i-500: #14b8a6;
+  --color-i-600: #2dd4bf;
+  --color-i-700: #5eead4;
+  --color-i-800: #99f6e4;
+  --color-i-900: #ccfbf1;
+  --color-i-950: #f0fdfa;
+
+  /* Default renkler - Dark Mode */
+  --color-default: #000000;
+  --color-default-inverse: #ffffff;
+
+  /* Eski değişkenler - uyumluluk için */
+  --background: var(--color-default);
+  --foreground: var(--color-50);
+}
+
+/* Tailwind CSS v4 Tema Tanımlamaları */
+@theme {
+  /* Ana renk skalası */
+  --color-50: #fafafa;
+  --color-100: #f5f5f5;
+  --color-200: #e5e5e5;
+  --color-300: #d4d4d4;
+  --color-400: #a3a3a3;
+  --color-500: #737373;
+  --color-600: #525252;
+  --color-700: #404040;
+  --color-800: #262626;
+  --color-900: #171717;
+  --color-950: #0a0a0a;
+
+  /* Marka rengi - I serisi (Teal) */
+  --color-i-50: #f0fdfa;
+  --color-i-100: #ccfbf1;
+  --color-i-200: #99f6e4;
+  --color-i-300: #5eead4;
+  --color-i-400: #2dd4bf;
+  --color-i-500: #14b8a6;
+  --color-i-600: #0d9488;
+  --color-i-700: #0f766e;
+  --color-i-800: #115e59;
+  --color-i-900: #134e4a;
+  --color-i-950: #042f2e;
+
+  /* Default renkler */
+  --color-default: #ffffff;
+  --color-default-inverse: #000000;
+
+  /* Font tanımlamaları */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-instrument-serif: var(--font-instrument-serif);
+  --font-imbue: var(--font-imbue);
+}
+
+/* Dark Mode geçersiz kılmaları - Tailwind'in dark: önekini kullanmak için */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-50: #0a0a0a;
+    --color-100: #171717;
+    --color-200: #262626;
+    --color-300: #404040;
+    --color-400: #525252;
+    --color-500: #737373;
+    --color-600: #a3a3a3;
+    --color-700: #d4d4d4;
+    --color-800: #e5e5e5;
+    --color-900: #f5f5f5;
+    --color-950: #fafafa;
+
+    --color-i-50: #042f2e;
+    --color-i-100: #134e4a;
+    --color-i-200: #115e59;
+    --color-i-300: #0f766e;
+    --color-i-400: #0d9488;
+    --color-i-500: #14b8a6;
+    --color-i-600: #2dd4bf;
+    --color-i-700: #5eead4;
+    --color-i-800: #99f6e4;
+    --color-i-900: #ccfbf1;
+    --color-i-950: #f0fdfa;
+
+    --color-default: #000000;
+    --color-default-inverse: #ffffff;
+  }
+}
+
+/* Yardımcı sınıflar */
+@layer base {
+  .bg-i {
+    @apply bg-i-500;
+  }
+  .text-i {
+    @apply text-i-500;
+  }
+  .border-i {
+    @apply border-i-500;
+  }
+  .bg-default {
+    @apply bg-default;
+  }
+  .text-default {
+    @apply text-default;
+  }
+  .bg-default-inverse {
+    @apply bg-default-inverse;
+  }
+  .text-default-inverse {
+    @apply text-default-inverse;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}

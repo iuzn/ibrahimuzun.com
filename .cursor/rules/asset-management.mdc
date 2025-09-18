@@ -1,0 +1,313 @@
+---
+alwaysApply: false
+description: Rules for managing fonts, images, and other assets from Figma designs
+---
+
+# Asset Management Rules
+
+Systematically handle all assets extracted from Figma designs, ensuring optimal performance and proper integration.
+
+## Font Management
+
+### Google Fonts Integration
+
+```typescript
+// Always use Next.js font optimization
+import { Instrument_Serif, Imbue } from "next/font/google";
+
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+});
+```
+
+### Implementation Steps
+
+1. **Identify Fonts**: Extract font families from Figma analysis
+2. **Import Fonts**: Use Next.js Google Fonts integration
+3. **Configure Variables**: Set CSS custom properties
+4. **Apply to Layout**: Add font variables to root layout
+5. **Update Tailwind**: Configure theme with font variables
+
+### Font Loading Optimization
+
+- Use `display: swap` for performance
+- Preload critical fonts
+- Implement font fallback strategies
+- Monitor Core Web Vitals
+
+## Image Management
+
+### Figma Image Download Process
+
+When extracting images from Figma designs, always download them to the public directory for optimal performance:
+
+```bash
+# Download Figma image to public directory
+curl -o public/image-name.png "http://localhost:3845/assets/[asset-id].png"
+
+# Create subdirectories if needed for organization
+mkdir -p public/images
+curl -o public/images/profile-avatar.png "http://localhost:3845/assets/[asset-id].png"
+
+# For icons, create dedicated folder
+mkdir -p public/icons
+curl -o public/icons/social-twitter.svg "http://localhost:3845/assets/[asset-id].svg"
+```
+
+### Image Naming Conventions
+
+Use semantic, descriptive names for downloaded images:
+
+```bash
+# ✅ Good naming examples
+public/profile-avatar.png          # Profile pictures
+public/hero-background.jpg         # Hero section backgrounds
+public/team-member-1.jpg           # Team member photos
+public/icons/social-twitter.svg    # Social media icons
+public/logos/company-logo.svg      # Brand assets
+
+# ❌ Avoid generic names
+public/image1.png
+public/photo.jpg
+public/pic.png
+```
+
+### Next.js Image Component Integration
+
+After downloading, integrate with Next.js Image component:
+
+```typescript
+import Image from "next/image";
+
+// Use local images with Next.js optimization
+<Image
+  src="/profile-avatar.png"
+  alt="Profile avatar of team member"
+  fill
+  className="object-cover rounded-full"
+  priority={isAboveFold}
+/>
+
+// For icons and logos with fixed dimensions
+<Image
+  src="/icons/social-twitter.svg"
+  alt="Twitter social media link"
+  width={24}
+  height={24}
+/>
+```
+
+### Background Images Migration
+
+Convert Figma background-image URLs to local assets:
+
+```typescript
+// ❌ Before (Figma URL - not recommended for production)
+<div
+  style={{
+    backgroundImage: `url('http://localhost:3845/assets/6fcdcd547ef68f6effbe8e61d629b14fd675af28.png')`,
+  }}
+/>
+
+// ✅ After (Local asset with Next.js Image - recommended)
+<div className="relative overflow-hidden rounded-lg">
+  <Image
+    src="/profile-background.png"
+    alt="Profile section background"
+    fill
+    className="object-cover"
+    priority
+  />
+</div>
+
+// Alternative: CSS background only for decorative images
+<div
+  className="bg-cover bg-center bg-no-repeat"
+  style={{
+    backgroundImage: `url('/decorative-pattern.png')`,
+  }}
+  role="presentation"
+  aria-hidden="true"
+/>
+```
+
+### Next.js Image Component Best Practices
+
+```typescript
+// Always use Next.js Image for optimization
+<Image
+  src="/image.png"
+  alt="Descriptive alt text"
+  fill // Use fill for responsive containers
+  className="object-cover"
+  priority={isAboveFold} // Use priority for above-the-fold images
+  sizes="(max-width: 768px) 100vw, 50vw" // Define responsive sizes
+/>
+```
+
+### Image Optimization Checklist
+
+- [ ] Use Next.js Image component when possible
+- [ ] Configure `next.config.ts` for external domains
+- [ ] Set proper `width` and `height` or use `fill`
+- [ ] Add descriptive `alt` text
+- [ ] Use `priority` for above-the-fold images
+- [ ] Implement responsive images with `sizes`
+- [ ] Use WebP format when available
+
+## Asset Organization
+
+### File Structure
+
+```
+public/
+├── images/          # Static images from Figma
+│   ├── profile-avatar.png
+│   └── hero-background.jpg
+├── icons/           # Icon assets from Figma
+│   ├── social-twitter.svg
+│   └── navigation-menu.svg
+└── logos/           # Logo assets
+    └── company-logo.svg
+
+src/
+├── components/      # Components organized by category
+│   ├── layout/      # Navigation, Header, Footer
+│   ├── sections/    # Hero, Profile, About sections
+│   ├── ui/          # Button, Card, Input components
+│   └── forms/       # Form components
+├── assets/          # Asset placeholders
+├── constants/       # App constants
+├── hooks/           # Custom React hooks
+├── lib/             # Utility libraries
+├── types/           # TypeScript definitions
+└── utils/           # Helper functions
+```
+
+### Asset Naming Convention
+
+- Use kebab-case for file names
+- Include descriptive names (e.g., `hero-background.jpg`)
+- Add size suffixes for responsive images (`image@2x.png`)
+- Use semantic names over generic ones
+
+## Performance Optimization
+
+### Font Loading
+
+- Use `font-display: swap` to prevent FOIT
+- Preload critical fonts
+- Implement font fallback chains
+- Monitor font loading performance
+
+### Image Optimization
+
+- Use modern formats (WebP, AVIF)
+- Implement responsive images
+- Set proper compression levels
+- Use CDN for global delivery
+
+### Bundle Optimization
+
+- Code-split large assets
+- Use dynamic imports for heavy components
+- Implement lazy loading
+- Monitor bundle size increases
+
+## Asset Versioning
+
+### Cache Busting
+
+- Use hashed filenames for cache invalidation
+- Implement proper cache headers
+- Version assets with build numbers
+- Use CDN with versioned URLs
+
+### Asset Updates
+
+- Track asset changes from Figma
+- Update references in components
+- Test asset loading after updates
+- Document asset dependencies
+
+## Error Handling
+
+### Missing Assets
+
+```typescript
+// Always provide fallbacks
+const imageUrl = assetUrl || "/fallback-image.jpg";
+```
+
+### Font Loading Failures
+
+- Implement font fallback strategies
+- Use system font stacks
+- Monitor font loading errors
+- Provide graceful degradation
+
+### Network Issues
+
+- Implement offline fallbacks
+- Use service workers for caching
+- Provide loading states
+- Handle slow connections gracefully
+
+## Accessibility
+
+### Image Accessibility
+
+- Always provide meaningful alt text
+- Use decorative images appropriately
+- Implement focus indicators for interactive images
+- Ensure sufficient color contrast
+
+### Font Accessibility
+
+- Maintain readable font sizes (minimum 14px)
+- Ensure proper line height ratios
+- Test font rendering on different devices
+- Provide font scaling options
+
+## Monitoring & Analytics
+
+### Performance Metrics
+
+- Track Largest Contentful Paint (LCP)
+- Monitor Cumulative Layout Shift (CLS)
+- Measure First Input Delay (FID)
+- Analyze Core Web Vitals
+
+### Asset Usage
+
+- Track unused assets
+- Monitor asset loading times
+- Identify performance bottlenecks
+- Optimize based on real user data
+
+## Deployment Considerations
+
+### Build Optimization
+
+- Optimize assets during build process
+- Minify CSS and JavaScript
+- Compress images automatically
+- Generate responsive image variants
+
+### CDN Configuration
+
+- Configure CDN for global delivery
+- Set proper cache headers
+- Implement asset versioning
+- Monitor CDN performance
+
+### Environment Variables
+
+```bash
+# Use environment variables for asset URLs
+NEXT_PUBLIC_CDN_URL=https://cdn.example.com
+NEXT_PUBLIC_ASSET_VERSION=v1.2.3
+```

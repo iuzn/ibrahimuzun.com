@@ -1,0 +1,170 @@
+---
+alwaysApply: true
+description: Main workflow for Figma-to-code conversion process
+---
+
+use bun instead of npm
+All code and file edits must be in English only
+The user is the owner and authority - follow instructions strictly
+Do quality work to avoid any swearing from the user
+
+# Figma-to-Code Conversion Workflow
+
+This project follows a systematic approach to convert Figma designs into production-ready React components. All development must follow this workflow to ensure consistency and quality.
+
+## Core Principles
+
+1. **Incremental Updates**: Analyze existing code first, then apply only necessary changes from Figma
+2. **Preserve Architecture**: Maintain existing component structure and naming conventions
+3. **Minimal Changes**: Only update what has actually changed in Figma design
+4. **Clean Architecture**: Separate concerns with dedicated components, proper imports, and modular structure
+5. **Performance First**: Use Next.js optimizations, proper image handling, and efficient CSS
+6. **Type Safety**: All components must be TypeScript-based with proper type definitions
+7. **Accessibility**: Ensure WCAG compliance and semantic HTML structure
+
+## Workflow Steps
+
+### 1. Code-First Analysis
+
+- **First**: Analyze existing component code structure
+- **Second**: Compare with Figma design to identify changes
+- **Third**: Apply only necessary updates while preserving existing architecture
+
+### 2. Design Analysis (`figma-analysis.mdc`)
+
+- Use MCP tools when significant design changes are detected
+- Identify only the changed elements, not entire component structure
+- Document specific design token changes (colors, typography, spacing)
+
+### 2. Asset Preparation (`asset-management.mdc`)
+
+- Extract and download images from Figma to public directory
+- Configure Google Fonts integration
+- Set up Next.js image optimization with local assets
+
+### 3. Component Development (`component-development.mdc`)
+
+- Create modular React components
+- Implement responsive design with Tailwind CSS
+- Remove unnecessary wrapper divs and optimize DOM structure
+
+### 4. Integration & Testing (`code-quality.mdc`)
+
+- Integrate components into main layout
+- Run lint checks and fix all errors
+- Test functionality and performance
+- Generate final analysis report
+
+## Quality Gates
+
+- ✅ **Zero Lint Errors**: All ESLint rules must pass
+- ✅ **Type Safety**: No TypeScript errors
+- ✅ **Performance**: Images optimized, fonts loaded efficiently
+- ✅ **Responsiveness**: Mobile-first approach with Tailwind
+- ✅ **SEO**: Proper meta tags and semantic structure
+
+## File Organization
+
+```
+src/
+├── app/                 # Next.js app router
+│   ├── layout.tsx      # Font loading, global styles
+│   ├── page.tsx        # Main page composition
+│   └── globals.css     # Tailwind imports
+├── components/         # Reusable React components
+│   ├── layout/         # Layout components (Navigation, Header, Footer)
+│   ├── sections/       # Page sections (Hero, Profile, About)
+│   ├── ui/             # UI components (Button, Card, Input)
+│   └── forms/          # Form components
+├── assets/             # Asset placeholders
+├── constants/          # App constants
+├── hooks/              # Custom React hooks
+├── lib/                # Utility libraries
+├── types/              # TypeScript definitions
+└── utils/              # Helper functions
+```
+
+## Communication
+
+- All code comments must be in Turkish
+- All code, expressions, and technical documentation must be in English
+- Step-by-step progress with detailed analysis after each major change
+- Use TODO tracking for complex multi-step tasks
+- **Report color changes**: Always specify semantic classes used (bg-50, text-i-800, etc.)
+- **Report font changes**: Always specify font system variables used (--font-geist-sans, etc.)
+- **Confirm semantic understanding**: Before applying changes, confirm Figma variable interpretation
+
+## Figma Semantic Integration
+
+### Color System Mapping
+
+**CRITICAL**: Always use Figma variables as semantic references, never as direct values!
+
+#### Primary Color Scale (50-950)
+
+- **Light Mode**: 50 (lightest) → 950 (darkest)
+- **Dark Mode**: 950 (lightest) → 50 (darkest) - **ALWAYS INVERTED**
+- **Usage**: `bg-50`, `bg-100`, `bg-200`, `text-700`, `border-400`
+
+#### Brand Color Scale (I-Series - Teal)
+
+- **Figma Variable**: `i-800: #115e59` (brand identity)
+- **Light Mode**: i-50 (lightest teal) → i-950 (darkest teal)
+- **Dark Mode**: i-950 (lightest teal) → i-50 (darkest teal)
+- **Usage**: `bg-i-500`, `text-i-800`, `border-i-300`
+
+#### Semantic Colors
+
+- **Default**: `bg-default` (white/black auto-switch)
+- **Default Inverse**: `bg-default-inverse` (black/white auto-switch)
+- **Never use**: `bg-white`, `bg-black` - always use semantic equivalents
+
+### Font System Mapping
+
+#### Available Fonts
+
+- **geistSans**: Main UI font (variable: --font-geist-sans)
+- **geistMono**: Code/monospace font (variable: --font-geist-mono)
+- **instrumentSerif**: Headings serif font (variable: --font-instrument-serif)
+- **imbue**: Accent/special font (variable: --font-imbue)
+
+#### Font Usage Rules
+
+- **Headings**: Use `instrumentSerif` with `font-instrument-serif italic`
+- **Body Text**: Use `geistSans` with `font-geist-sans`
+- **Code**: Use `geistMono` with `font-geist-mono`
+- **Accent**: Use `imbue` with `font-imbue`
+
+### Figma Variable Interpretation
+
+#### When Figma Says:
+
+- `50` → Use `bg-50` or `text-50` (our semantic scale)
+- `i-800` → Use `text-i-800` or `bg-i-800` (brand color)
+- `default` → Use `bg-default` or `text-default` (semantic white/black)
+- Any font reference → Map to our font system variables
+
+#### Change Detection Rules
+
+- **Color Changes**: Only update if semantic meaning changes
+- **Font Changes**: Only update if font family/type changes
+- **Layout Changes**: Always preserve existing structure
+- **New Elements**: Add with semantic color classes
+
+## Tools & Dependencies
+
+- **Framework**: Next.js 15 with App Router
+- **Styling**: Tailwind CSS v4
+- **Fonts**: Google Fonts (Next.js integration)
+- **Images**: Next.js Image component with optimization
+- **Linting**: ESLint with Next.js config
+- **TypeScript**: Strict mode enabled
+- **Package Manager**: Bun
+
+See specific rule files for detailed implementation guidelines:
+
+- [incremental-updates.mdc](mdc:incremental-updates.mdc) - **CRITICAL**: Intelligent incremental updates
+- [figma-analysis.mdc](mdc:figma-analysis.mdc) - Figma design analysis
+- [asset-management.mdc](mdc:asset-management.mdc) - Font and image handling
+- [component-development.mdc](mdc:component-development.mdc) - React component creation
+- [code-quality.mdc](mdc:code-quality.mdc) - Testing and quality assurance

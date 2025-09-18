@@ -1,0 +1,353 @@
+---
+alwaysApply: false
+description: Rules for code quality assurance, testing, and deployment readiness
+---
+
+# Code Quality Assurance Rules
+
+Ensure all code meets production standards through systematic testing and quality checks.
+
+## Linting & Code Style
+
+### ESLint Configuration
+
+```javascript
+// .eslintrc.json or eslint.config.mjs
+{
+  "extends": ["next/core-web-vitals"],
+  "rules": {
+    "react-hooks/exhaustive-deps": "error",
+    "react/jsx-key": "error",
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-explicit-any": "warn"
+  }
+}
+```
+
+### Pre-commit Hooks
+
+```bash
+# Use Husky for pre-commit quality checks
+bun add --dev husky lint-staged
+
+# package.json
+{
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": ["eslint --fix", "tsc --noEmit"],
+    "*.{css,scss}": ["stylelint --fix"]
+  }
+}
+```
+
+## TypeScript Configuration
+
+### Strict Mode Settings
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true
+  }
+}
+```
+
+### Type Safety Checklist
+
+- [ ] All variables have explicit types
+- [ ] Function parameters are typed
+- [ ] Return types are specified
+- [ ] Generic types are properly constrained
+- [ ] No `any` types (except where absolutely necessary)
+- [ ] Interface definitions are complete
+
+## Performance Monitoring
+
+### Core Web Vitals
+
+```typescript
+// Use web-vitals library for monitoring
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from "web-vitals";
+
+getCLS(console.log);
+getFID(console.log);
+getFCP(console.log);
+getLCP(console.log);
+getTTFB(console.log);
+
+// Monitor image loading performance
+const imageObserver = new PerformanceObserver((list) => {
+  list.getEntries().forEach((entry) => {
+    if (entry.name.includes("/_next/image")) {
+      console.log("Image loaded:", entry.name, "in", entry.duration, "ms");
+    }
+  });
+});
+imageObserver.observe({ entryTypes: ["resource"] });
+```
+
+### Bundle Analysis
+
+```bash
+# Analyze bundle size
+bun add --dev webpack-bundle-analyzer
+
+# Add to package.json scripts
+{
+  "scripts": {
+    "analyze": "ANALYZE=true bun run build"
+  }
+}
+```
+
+### Performance Budget
+
+```javascript
+// next.config.js
+module.exports = {
+  // Performance budget configuration
+  experimental: {
+    webVitals: true,
+  },
+  // Bundle size limits
+  webpack: (config) => {
+    config.performance = {
+      hints: "error",
+      maxEntrypointSize: 300000,
+      maxAssetSize: 100000,
+    };
+    return config;
+  },
+};
+```
+
+## Security Checklist
+
+### Input Validation
+
+```typescript
+// Validate user inputs
+const validateEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+// Sanitize user inputs
+const sanitizeInput = (input: string): string => {
+  return input.replace(/[<>]/g, "");
+};
+```
+
+### Authentication & Authorization
+
+- [ ] Implement proper authentication flows
+- [ ] Use secure token storage
+- [ ] Validate user permissions
+- [ ] Implement CSRF protection
+- [ ] Use HTTPS for all communications
+
+### Data Protection
+
+- [ ] Encrypt sensitive data
+- [ ] Implement proper error handling
+- [ ] Avoid exposing sensitive information
+- [ ] Use environment variables for secrets
+- [ ] Implement rate limiting
+
+## Accessibility Testing
+
+### Automated Testing
+
+```typescript
+// Use axe-core for accessibility testing
+import { axe, toHaveNoViolations } from "jest-axe";
+import { render } from "@testing-library/react";
+
+expect.extend(toHaveNoViolations);
+
+it("should have no accessibility violations", async () => {
+  const { container } = render(<Component />);
+  const results = await axe(container);
+  expect(results).toHaveNoViolations();
+});
+```
+
+### Manual Testing Checklist
+
+- [ ] Keyboard navigation works
+- [ ] Screen reader compatibility
+- [ ] Color contrast meets WCAG standards
+- [ ] Focus indicators are visible
+- [ ] Semantic HTML structure
+- [ ] ARIA labels are appropriate
+
+## Deployment Readiness
+
+### Build Optimization
+
+```javascript
+// next.config.js
+module.exports = {
+  // Enable optimizations
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+  // Image optimization
+  images: {
+    formats: ["image/webp", "image/avif"],
+  },
+};
+```
+
+### Environment Configuration
+
+```bash
+# .env.local
+NEXT_PUBLIC_API_URL=https://api.example.com
+NEXT_PUBLIC_APP_ENV=production
+
+# .env.example (for team members)
+NEXT_PUBLIC_API_URL=your_api_url_here
+NEXT_PUBLIC_APP_ENV=development
+```
+
+### Health Checks
+
+```typescript
+// Health check endpoint
+export default function handler(req, res) {
+  res.status(200).json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    version: process.env.npm_package_version,
+  });
+}
+```
+
+## Monitoring & Error Tracking
+
+### Error Boundary Implementation
+
+```typescript
+// app/error.tsx (Next.js 13+)
+"use client";
+
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  // Log error to monitoring service
+  console.error(error);
+
+  return (
+    <div>
+      <h2>Something went wrong!</h2>
+      <button onClick={() => reset()}>Try again</button>
+    </div>
+  );
+}
+```
+
+### Analytics Integration
+
+```typescript
+// Use appropriate analytics service
+import { Analytics } from "@vercel/analytics/react";
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Analytics />
+      </body>
+    </html>
+  );
+}
+```
+
+## Documentation Standards
+
+### Code Documentation
+
+````typescript
+/**
+ * Calculates the total price including tax
+ *
+ * @param price - Base price before tax
+ * @param taxRate - Tax rate as decimal (e.g., 0.08 for 8%)
+ * @returns Total price including tax
+ *
+ * @example
+ * ```typescript
+ * calculateTotal(100, 0.08) // Returns 108
+ * ```
+ */
+function calculateTotal(price: number, taxRate: number): number {
+  return price * (1 + taxRate);
+}
+````
+
+### API Documentation
+
+```typescript
+// Use OpenAPI/Swagger for API endpoints
+/**
+ * GET /api/users
+ * Retrieve list of users
+ *
+ * @query {number} limit - Maximum number of users to return
+ * @query {number} offset - Number of users to skip
+ * @returns {User[]} Array of user objects
+ */
+export async function GET(request: Request) {
+  // Implementation
+}
+```
+
+## Continuous Integration
+
+### GitHub Actions Example
+
+```yaml
+# .github/workflows/ci.yml
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+      - run: bun install
+      - run: bun run lint
+      - run: bun run type-check
+      - run: bun run build
+```
+
+### Quality Gates
+
+- [ ] Bundle size within limits
+- [ ] Performance metrics acceptable
+- [ ] Security scan passes
+- [ ] Accessibility audit passes

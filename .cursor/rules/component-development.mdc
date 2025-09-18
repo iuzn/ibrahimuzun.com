@@ -1,0 +1,419 @@
+---
+alwaysApply: false
+description: Rules for creating clean, maintainable React components from Figma designs
+---
+
+# React Component Development Rules
+
+Create modular, performant React components with clean architecture following established patterns.
+
+## Component Structure
+
+### File Organization
+
+```
+src/components/
+├── layout/               # Layout components
+│   ├── Navigation.tsx    # Navigation component
+│   ├── Header.tsx        # Header component
+│   └── Footer.tsx        # Footer component
+├── sections/             # Page sections
+│   ├── Hero.tsx          # Hero section
+│   ├── Profile.tsx       # Profile section
+│   └── About.tsx         # About section
+├── ui/                   # Reusable UI components
+│   ├── Button.tsx        # Button component
+│   ├── Card.tsx          # Card component
+│   └── Input.tsx         # Input component
+└── forms/                # Form components
+    ├── ContactForm.tsx   # Contact form
+    └── NewsletterForm.tsx # Newsletter form
+```
+
+### Component Template
+
+```typescript
+// Use named exports for better tree shaking
+export default function ComponentName() {
+  return (
+    // Component implementation
+  );
+}
+
+// TypeScript interface for props (if needed)
+interface ComponentNameProps {
+  // Define props here
+}
+```
+
+## Code Quality Standards
+
+### Import Organization
+
+```typescript
+// 1. React imports
+import React from "react";
+
+// 2. Third-party libraries
+import { useState } from "react";
+
+// 3. Internal components
+import Button from "@/components/Button";
+
+// 4. Utilities and hooks
+import { useCustomHook } from "@/hooks/useCustomHook";
+
+// 5. Types and interfaces
+import type { User } from "@/types/user";
+
+// 6. Assets and constants
+import { API_URL } from "@/constants/api";
+```
+
+### Naming Conventions
+
+- **Components**: PascalCase (e.g., `UserProfile`)
+- **Files**: PascalCase matching component name
+- **Hooks**: camelCase with `use` prefix (e.g., `useUserData`)
+- **Utilities**: camelCase (e.g., `formatDate`)
+- **Constants**: SCREAMING_SNAKE_CASE (e.g., `API_BASE_URL`)
+
+## Figma-to-Component Conversion
+
+### DOM Optimization Strategy
+
+**BE SMART**: Analyze existing structure before making changes!
+
+```typescript
+// ✅ PRESERVE existing clean structure
+// If user has already optimized the DOM, don't change it!
+<div className="existing-clean-structure">
+  <h2>Title</h2>
+  <p>Content</p>
+</div>
+
+// ❌ DON'T blindly "optimize" working structures
+// Only optimize if there are actual performance issues
+
+// ✅ Add semantic HTML when appropriate
+<article className="card">
+  <h2>Title</h2>
+  <p>Content</p>
+</article>
+```
+
+### When to Optimize DOM
+
+- **Performance Issues**: Only when there are actual performance problems
+- **New Components**: When creating components from scratch
+- **User Request**: Only when user specifically asks for optimization
+- **Accessibility**: When semantic HTML improves accessibility
+
+**NEVER** change working DOM structure just because "it could be optimized"!
+
+### Class Name Management
+
+```typescript
+// Use semantic class names
+<div className="profile-card">
+  <div className="profile-avatar" />
+  <div className="profile-info" />
+</div>
+
+// Combine with Tailwind utilities
+<div className="profile-card bg-white rounded-lg p-4 shadow-md">
+  <img className="profile-avatar w-12 h-12 rounded-full" />
+  <div className="profile-info ml-4">
+    <h3 className="font-semibold">Name</h3>
+    <p className="text-gray-600">Bio</p>
+  </div>
+</div>
+```
+
+## Responsive Design
+
+### Mobile-First Approach
+
+```typescript
+// Start with mobile, add breakpoints as needed
+<div className="container mx-auto px-4 sm:px-6 lg:px-8">
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {/* Content */}
+  </div>
+</div>
+```
+
+### Fluid Typography
+
+```typescript
+// Use responsive text sizes
+<h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+  Responsive Heading
+</h1>
+
+<p className="text-sm sm:text-base lg:text-lg">
+  Responsive paragraph text
+</p>
+```
+
+## Performance Optimization
+
+### Component Splitting
+
+```typescript
+// Split large components into smaller ones
+export default function LargeComponent() {
+  return (
+    <div>
+      <Header />
+      <Content />
+      <Footer />
+    </div>
+  );
+}
+```
+
+### Lazy Loading
+
+```typescript
+// Use dynamic imports for heavy components
+import dynamic from "next/dynamic";
+
+const HeavyComponent = dynamic(() => import("@/components/HeavyComponent"), {
+  loading: () => <div>Loading...</div>,
+});
+```
+
+### Memoization
+
+```typescript
+import React, { memo, useMemo } from "react";
+
+// Memoize expensive computations
+const ExpensiveComponent = memo(({ data }) => {
+  const processedData = useMemo(() => {
+    return heavyComputation(data);
+  }, [data]);
+
+  return <div>{processedData}</div>;
+});
+```
+
+## State Management
+
+### Local State
+
+```typescript
+// Use useState for simple local state
+const [isOpen, setIsOpen] = useState(false);
+const [user, setUser] = useState<User | null>(null);
+```
+
+### Complex State
+
+```typescript
+// Use useReducer for complex state logic
+const [state, dispatch] = useReducer(reducer, initialState);
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "TOGGLE":
+      return { ...state, isOpen: !state.isOpen };
+    default:
+      return state;
+  }
+}
+```
+
+## Error Boundaries
+
+### Component-Level Error Handling
+
+```typescript
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("Error caught by boundary:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div>Something went wrong.</div>;
+    }
+
+    return this.props.children;
+  }
+}
+```
+
+## Image Integration
+
+### Local Asset Usage
+
+Always use locally downloaded Figma assets in components:
+
+```typescript
+import Image from "next/image";
+
+// Use semantic paths for downloaded assets
+<Image
+  src="/images/profile-avatar.png"
+  alt="Profile avatar"
+  fill
+  className="object-cover rounded-full"
+  priority
+/>
+
+// For icons with fixed dimensions
+<Image
+  src="/icons/social-twitter.svg"
+  alt="Follow us on Twitter"
+  width={24}
+  height={24}
+/>
+```
+
+### Background Images
+
+Prefer Next.js Image component over CSS background images:
+
+```typescript
+// ✅ Recommended: Use Image component
+<div className="relative h-64 overflow-hidden rounded-lg">
+  <Image
+    src="/images/hero-background.jpg"
+    alt="Hero background"
+    fill
+    className="object-cover"
+    priority
+  />
+</div>
+
+// ❌ Avoid: CSS background images (only for decorative patterns)
+<div
+  className="bg-pattern"
+  style={{ backgroundImage: `url('/patterns/decorative.png')` }}
+  role="presentation"
+  aria-hidden="true"
+/>
+```
+
+## Accessibility (a11y)
+
+### Semantic HTML
+
+```typescript
+// Use proper semantic elements
+<header role="banner">
+  <nav role="navigation">
+    <ul role="menubar">
+      <li role="menuitem"><a href="/">Home</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main role="main">
+  <article>
+    <h1>Article Title</h1>
+    <p>Article content...</p>
+  </article>
+</main>
+
+<footer role="contentinfo">
+  <p>&copy; 2024 Company</p>
+</footer>
+```
+
+### ARIA Attributes
+
+```typescript
+// Add ARIA labels where needed
+<button
+  aria-label="Close modal"
+  aria-expanded={isOpen}
+  onClick={handleClose}
+>
+  ×
+</button>
+
+<div role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <h2 id="modal-title">Modal Title</h2>
+  <p>Modal content...</p>
+</div>
+```
+
+### Keyboard Navigation
+
+```typescript
+// Ensure keyboard accessibility
+const handleKeyDown = (event) => {
+  if (event.key === "Enter" || event.key === " ") {
+    handleClick();
+  }
+};
+
+<button onClick={handleClick} onKeyDown={handleKeyDown} tabIndex={0}>
+  Clickable Element
+</button>;
+```
+
+## Code Documentation
+
+### Component Documentation
+
+```typescript
+/**
+ * Profile component displays user information and avatar
+ *
+ * @param user - User object containing profile data
+ * @param size - Size variant for the component
+ * @param onClick - Callback function for click events
+ */
+interface ProfileProps {
+  user: User;
+  size?: "small" | "medium" | "large";
+  onClick?: () => void;
+}
+
+export default function Profile({
+  user,
+  size = "medium",
+  onClick,
+}: ProfileProps) {
+  // Implementation
+}
+```
+
+### Storybook Integration
+
+```typescript
+// ComponentName.stories.tsx
+import type { Meta, StoryObj } from "@storybook/react";
+import ComponentName from "./ComponentName";
+
+const meta: Meta<typeof ComponentName> = {
+  title: "Components/ComponentName",
+  component: ComponentName,
+  parameters: {
+    layout: "centered",
+  },
+};
+
+export default meta;
+
+type Story = StoryObj<typeof ComponentName>;
+
+export const Default: Story = {
+  args: {
+    // Default props
+  },
+};
+```

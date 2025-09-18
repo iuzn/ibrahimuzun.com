@@ -1,0 +1,244 @@
+---
+alwaysApply: false
+description: Rules for analyzing Figma designs and extracting design tokens
+---
+
+# Figma Design Analysis Rules
+
+Use MCP Figma tools to systematically analyze designs and extract all necessary information for accurate code conversion.
+
+## 🎨 Color & Font System Integration
+
+**CRITICAL**: Always map Figma variables to our semantic color/font system!
+
+## Analysis Process
+
+### 1. Existing Code Analysis
+
+**CRITICAL**: Always start by analyzing existing component code first!
+
+```typescript
+// 1. Read current component file
+const currentCode = read_file("src/components/ComponentName.tsx");
+
+// 2. Understand existing structure
+- Component name and export pattern
+- Current DOM structure and nesting
+- Existing CSS classes and styling approach
+- Current props and state management
+```
+
+### 2. Change Detection
+
+```typescript
+// 3. Only then analyze Figma for changes
+// Use Figma tools selectively based on detected changes
+if (significantStructuralChange) {
+  mcp_Figma_get_metadata(nodeId, clientLanguages, clientFrameworks);
+} else if (styleOnlyChange) {
+  // Use targeted analysis
+  mcp_Figma_get_code(nodeId, clientLanguages, clientFrameworks);
+}
+```
+
+### 2. Component Identification
+
+- Identify reusable components and instances
+- Document component hierarchy and relationships
+- Note any design system patterns (buttons, cards, etc.)
+
+### 3. Design Token Extraction
+
+From Figma analysis, extract and **ALWAYS MAP TO OUR SEMANTIC SYSTEM**:
+
+#### Colors - Map to Semantic Scale
+
+- **Figma `50`** → `bg-50` (lightest in light mode, darkest in dark mode)
+- **Figma `100`** → `bg-100` (our semantic gray scale)
+- **Figma `200`** → `bg-200`
+- **Figma `700`** → `text-700` (our semantic gray scale)
+- **Figma `i-800`** → `text-i-800` (brand teal color)
+- **Figma `default`** → `bg-default` (semantic white/black)
+
+#### Typography - Map to Font System
+
+- **Geist** → `font-geist-sans` (main UI font)
+- **Geist Mono** → `font-geist-mono` (code font)
+- **Instrument Serif** → `font-instrument-serif italic` (headings)
+- **Imbue** → `font-imbue` (accent font)
+
+#### Spacing & Other Properties
+
+- **Spacing**: Margin, padding, gap values (keep as-is)
+- **Border Radius**: `12px` from Figma variables
+- **Shadows**: Box-shadow definitions (keep as-is)
+
+### 4. Asset Inventory
+
+- **Images**: PNG, JPG, SVG files with dimensions and download URLs
+- **Icons**: Vector graphics and symbol usage
+- **Fonts**: Google Fonts family names and weights
+
+### Asset Download Process
+
+After identifying assets in Figma, immediately download them to local storage:
+
+```bash
+# Create organized directory structure
+mkdir -p public/images public/icons public/logos
+
+# Download identified images with semantic names
+curl -o public/images/profile-avatar.png "http://localhost:3845/assets/[profile-asset-id].png"
+curl -o public/icons/social-twitter.svg "http://localhost:3845/assets/[icon-asset-id].svg"
+curl -o public/logos/company-logo.svg "http://localhost:3845/assets/[logo-asset-id].svg"
+curl -o public/images/hero-background.jpg "http://localhost:3845/assets/[hero-asset-id].jpg"
+```
+
+### Asset Naming Strategy
+
+Map Figma layer names to semantic, descriptive file names:
+
+```bash
+# Figma Layer Name → File Name Mapping
+"Profile Photo" → public/images/profile-avatar.png
+"Twitter Icon" → public/icons/social-twitter.svg
+"Company Logo" → public/logos/company-logo.svg
+"Hero Background" → public/images/hero-background.jpg
+"Team Member 1" → public/images/team-member-1.jpg
+```
+
+### 5. Responsive Breakpoints
+
+- Document mobile, tablet, desktop layouts
+- Note responsive behavior patterns
+- Identify fluid vs fixed elements
+
+## Code Generation Strategy
+
+### Selective Code Generation
+
+**DO NOT** automatically replace entire components with Figma code!
+
+```typescript
+// ❌ WRONG: Blindly replacing entire component
+const figmaCode = mcp_Figma_get_code(nodeId, clientLanguages, clientFrameworks);
+// Replace entire file with figmaCode
+
+// ✅ CORRECT: Selective updates
+const currentCode = read_file("component.tsx");
+const figmaCode = mcp_Figma_get_code(nodeId, clientLanguages, clientFrameworks);
+
+// Analyze differences and apply only necessary changes
+const changes = compareCodes(currentCode, figmaCode);
+// Apply only style changes, preserve component name, structure, etc.
+```
+
+### When to Use Figma Tools
+
+- **Minimal Changes**: Font size, colors, spacing → Apply manually
+- **Structural Changes**: New elements, layout changes → Use get_code selectively
+- **New Components**: Completely new components → Use get_code
+
+### Change Application Strategy
+
+1. **Preserve Component Identity**
+
+   - Keep existing component name
+   - Maintain export pattern
+   - Preserve existing props interface
+
+2. **Apply Only Changed Styles**
+
+   - Update only modified CSS classes
+   - Preserve existing DOM structure
+   - Keep existing semantic HTML
+
+3. **Maintain Code Quality**
+   - Keep existing comments and documentation
+   - Preserve existing TypeScript types
+   - Maintain consistent code style
+
+## Data Extraction Checklist
+
+### Required Information
+
+- [ ] Component structure and hierarchy
+- [ ] CSS classes and Tailwind utilities
+- [ ] Font usage and Google Fonts integration
+- [ ] Color palette and design tokens
+- [ ] Spacing and sizing values
+- [ ] Image assets and optimization settings
+
+### Node ID Tracking
+
+- Document all Figma node IDs for future updates
+- Maintain mapping between Figma and React components
+- Track component versions for design system updates
+
+## Quality Verification
+
+### Design Accuracy
+
+- [ ] Pixel-perfect matching with Figma design
+- [ ] Correct color values (hex codes)
+- [ ] Proper typography implementation
+- [ ] Accurate spacing and dimensions
+- [ ] Responsive behavior matches design
+
+### Technical Implementation
+
+- [ ] Semantic HTML structure
+- [ ] Accessible markup (ARIA labels, alt text)
+- [ ] Performance optimized (lazy loading, etc.)
+- [ ] Clean, maintainable code structure
+
+## Common Patterns
+
+### Layout Components
+
+- Use semantic HTML5 elements
+- Implement proper flexbox/grid layouts
+- Avoid unnecessary wrapper divs
+
+### Interactive Elements
+
+- Ensure proper focus states
+- Implement hover/active states
+- Add loading states where appropriate
+
+### Image Handling
+
+- Use Next.js Image component
+- Configure proper aspect ratios
+- Implement responsive images
+- Add proper alt text
+
+## Error Handling
+
+### Missing Assets
+
+- Document missing images or fonts
+- Provide fallback implementations
+- Notify design team of missing resources
+
+### Design Inconsistencies
+
+- Flag conflicting design patterns
+- Document design system violations
+- Suggest improvements to design team
+
+## Documentation Requirements
+
+### Component Documentation
+
+- Describe component purpose and usage
+- Document props and their types
+- Include usage examples
+- Note design system integration
+
+### Design System Integration
+
+- Reference design tokens used
+- Document responsive behavior
+- Include accessibility considerations
+- Note performance optimizations

@@ -1,0 +1,334 @@
+---
+alwaysApply: true
+description: Rules for intelligent incremental updates from Figma changes
+---
+
+# Incremental Update Rules
+
+**PREVENT BLIND REPLACEMENTS**: Never replace entire components with Figma code!
+
+## Core Philosophy
+
+The system must be intelligent enough to detect what actually changed in Figma and apply only those specific changes, while preserving the user's existing architecture decisions.
+
+## Change Detection Algorithm
+
+### 1. Analyze Existing Code First
+
+```typescript
+// ALWAYS start here - never skip this step!
+const existingCode = read_file("component.tsx");
+
+// Understand the current structure
+interface ExistingStructure {
+  componentName: string;
+  exportPattern: string;
+  domStructure: string[];
+  cssClasses: string[];
+  propsInterface?: string;
+  customLogic?: string[];
+}
+```
+
+### 2. Detect Change Type
+
+```typescript
+enum ChangeType {
+  MINIMAL_STYLING = "font-size, color, spacing only",
+  STRUCTURAL = "new elements, layout changes",
+  FUNCTIONAL = "new props, state, or behavior",
+  COMPLETE_REWRITE = "entire component redesign",
+}
+
+// Auto-detect change type
+function detectChangeType(existing: string, figma: string): ChangeType {
+  // Compare DOM structures
+  // Compare CSS classes
+  // Compare component signatures
+  // Return appropriate change type
+}
+```
+
+### 3. Apply Changes Selectively
+
+```typescript
+function applyIncrementalUpdate(existingCode: string, figmaCode: string) {
+  const changeType = detectChangeType(existingCode, figmaCode);
+
+  switch (changeType) {
+    case ChangeType.MINIMAL_STYLING:
+      return applyStyleOnlyChanges(existingCode, figmaCode);
+
+    case ChangeType.STRUCTURAL:
+      return applyStructuralChanges(existingCode, figmaCode);
+
+    case ChangeType.FUNCTIONAL:
+      return applyFunctionalChanges(existingCode, figmaCode);
+
+    case ChangeType.COMPLETE_REWRITE:
+      // Only use as last resort and get user confirmation
+      return requireUserConfirmation(existingCode, figmaCode);
+  }
+}
+```
+
+## Minimal Styling Changes
+
+When user makes small changes like font size adjustments:
+
+```typescript
+function applyStyleOnlyChanges(existingCode: string, figmaCode: string) {
+  // 1. Preserve component name and export
+  const componentName = extractComponentName(existingCode);
+
+  // 2. Extract only style-related changes from Figma
+  const styleChanges = extractStyleChanges(existingCode, figmaCode);
+
+  // 3. Apply changes while preserving structure
+  return existingCode
+    .replace(/className="[^"]*"/g, (match) => {
+      // Only update classes that actually changed
+      return applySelectiveClassUpdates(match, styleChanges);
+    })
+    .replace(/text-\[\d+px\]/g, (match) => {
+      // Update only text sizes that changed
+      return applyFontSizeUpdate(match, styleChanges);
+    });
+}
+```
+
+## Structural Changes
+
+When adding/removing elements:
+
+```typescript
+function applyStructuralChanges(existingCode: string, figmaCode: string) {
+  // 1. Compare DOM structures
+  const existingDOM = parseDOM(existingCode);
+  const figmaDOM = parseDOM(figmaCode);
+
+  // 2. Find differences
+  const differences = compareDOMStructures(existingDOM, figmaDOM);
+
+  // 3. Apply only the changed parts
+  return applySelectiveDOMChanges(existingCode, differences);
+}
+```
+
+## Error Prevention Rules
+
+### NEVER Do These
+
+```typescript
+// ❌ WRONG: Blind replacement
+function updateComponent() {
+  const figmaCode = getFigmaCode();
+  writeFile("component.tsx", figmaCode); // Destroys user work!
+}
+
+// ❌ WRONG: Assuming Figma is always right
+function updateComponent() {
+  const figmaCode = getFigmaCode();
+  // Replace everything because "Figma is source of truth"
+  return figmaCode;
+}
+
+// ❌ WRONG: Over-optimization
+function updateComponent() {
+  // User has clean structure, but "optimize" it anyway
+  return removeAllWrapperDivs(existingCode);
+}
+```
+
+### ALWAYS Do These
+
+```typescript
+// ✅ CORRECT: Intelligent updates
+function updateComponent(existingCode: string) {
+  // 1. Analyze what user actually changed
+  const userChanges = analyzeUserIntent(existingCode, figmaCode);
+
+  // 2. Preserve user's architectural decisions
+  const preservedStructure = preserveExistingArchitecture(existingCode);
+
+  // 3. Apply only the specific changes
+  return applyMinimalChanges(preservedStructure, userChanges);
+}
+```
+
+## Color System Integration
+
+### Figma Color Variable Mapping
+
+```typescript
+function mapFigmaColorToSemantic(figmaColor: string): string {
+  const colorMappings = {
+    // Primary scale mapping
+    "50": "50", // #fafafa → bg-50
+    "100": "100", // #f5f5f5 → bg-100
+    "200": "200", // #e5e5e5 → bg-200
+    "700": "700", // #404040 → bg-700
+
+    // Brand color mapping (I-series)
+    "i-800": "i-800", // #115e59 → text-i-800
+
+    // Semantic colors
+    default: "default", // white/black → bg-default
+  };
+
+  return colorMappings[figmaColor] || figmaColor;
+}
+```
+
+### Font System Integration
+
+```typescript
+function mapFigmaFontToSemantic(figmaFont: string): string {
+  const fontMappings = {
+    Geist: "font-geist-sans",
+    "Geist Mono": "font-geist-mono",
+    "Instrument Serif": "font-instrument-serif",
+    Imbue: "font-imbue",
+  };
+
+  return fontMappings[figmaFont] || figmaFont;
+}
+```
+
+### Color Change Detection
+
+```typescript
+function detectColorChange(existing: string, figma: string) {
+  const existingSemantic = extractSemanticColor(existing);
+  const figmaSemantic = mapFigmaColorToSemantic(extractFigmaColor(figma));
+
+  if (existingSemantic !== figmaSemantic) {
+    return {
+      type: "COLOR_SEMANTIC_CHANGE",
+      from: existingSemantic,
+      to: figmaSemantic,
+      action: "UPDATE_SEMANTIC_COLOR_ONLY",
+      preserveStructure: true,
+    };
+  }
+}
+```
+
+## User Intent Detection
+
+### Font Size Changes
+
+```typescript
+function detectFontSizeChange(existing: string, figma: string) {
+  const existingSize = extractFontSize(existing);
+  const figmaSize = extractFontSize(figma);
+
+  if (existingSize !== figmaSize) {
+    return {
+      type: "FONT_SIZE_CHANGE",
+      from: existingSize,
+      to: figmaSize,
+      action: "UPDATE_ONLY_FONT_SIZE",
+    };
+  }
+}
+```
+
+### Wrapper Removal
+
+```typescript
+function detectWrapperRemoval(existing: string, figma: string) {
+  const existingLayers = countDOMLayers(existing);
+  const figmaLayers = countDOMLayers(figma);
+
+  if (existingLayers > figmaLayers) {
+    return {
+      type: "WRAPPER_REMOVAL",
+      removedLayers: existingLayers - figmaLayers,
+      action: "PRESERVE_EXISTING_STRUCTURE",
+    };
+  }
+}
+```
+
+## Quality Gates
+
+### Pre-Update Checks
+
+- [ ] Existing code builds successfully
+- [ ] Existing tests pass
+- [ ] Existing functionality preserved
+- [ ] User changes are minimal and intentional
+
+### Post-Update Validation
+
+- [ ] Code still builds
+- [ ] No new lint errors
+- [ ] Component renders correctly
+- [ ] User intent preserved
+
+## Recovery Mechanisms
+
+### If Update Goes Wrong
+
+```typescript
+function recoveryProtocol() {
+  // 1. Backup current working version
+  backupCurrentVersion();
+
+  // 2. Attempt selective rollback
+  rollbackToLastWorkingState();
+
+  // 3. Apply changes manually with user guidance
+  applyChangesWithUserApproval();
+}
+```
+
+### User Confirmation Required
+
+For significant changes, always ask user:
+
+```typescript
+function requireUserConfirmation(existingCode: string, proposedCode: string) {
+  const impact = analyzeImpact(existingCode, proposedCode);
+
+  if (impact.riskLevel === "HIGH") {
+    // Show diff to user
+    showCodeDiff(existingCode, proposedCode);
+
+    // Ask for explicit approval
+    return await getUserApproval();
+  }
+}
+```
+
+## Communication Guidelines
+
+### When Updates Are Applied
+
+```typescript
+function reportChanges(appliedChanges: Change[]) {
+  console.log("✅ Applied changes:");
+  appliedChanges.forEach((change) => {
+    console.log(`  - ${change.type}: ${change.description}`);
+  });
+
+  console.log("\n📋 Preserved:");
+  console.log("  - Component name and export pattern");
+  console.log("  - Existing DOM structure");
+  console.log("  - Custom logic and state management");
+  console.log("  - TypeScript interfaces");
+  console.log("  - Color semantic system (bg-50, text-i-800, etc.)");
+  console.log("  - Font system variables (--font-geist-sans, etc.)");
+}
+```
+
+### When Updates Are Rejected
+
+```typescript
+function reportRejection(reason: string) {
+  console.log("⚠️  Update cancelled:");
+  console.log(`   Reason: ${reason}`);
+  console.log("💡 Suggestion: Apply changes manually for better control");
+}
+```
