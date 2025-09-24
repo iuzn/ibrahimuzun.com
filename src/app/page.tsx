@@ -4,13 +4,13 @@ import Profile from "@/components/sections/Profile";
 export default function Home() {
   return (
     <div
-      className="bg-50 relative size-full min-h-screen px-[36px] py-[20px]"
+      className="bg-50 size-full min-h-screen px-9 py-5"
       data-name="Main"
       data-node-id="278:131"
     >
       {/* Ana container */}
       <div
-        className="content-stretch flex flex-col gap-[20px] items-start justify-start w-full max-w-6xl mx-auto"
+        className="flex flex-col gap-5 items-start justify-start w-full max-w-6xl mx-auto"
         data-node-id="278:132"
       >
         {/* Navigation */}
@@ -18,7 +18,7 @@ export default function Home() {
 
         {/* Ana içerik bölümü */}
         <div
-          className="content-stretch flex flex-col gap-[10px] items-center justify-start relative shrink-0 w-full"
+          className="flex flex-col gap-2.5 items-center justify-start w-full"
           data-node-id="278:144"
         >
           <Profile />

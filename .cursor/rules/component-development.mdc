@@ -130,6 +130,22 @@ import { API_URL } from "@/constants/api";
 </div>
 ```
 
+### Pixel to Tailwind Unit Conversion
+
+**PREFER**: Use Tailwind units over `[Xpx]` values when possible.
+
+**Convert pixels to Tailwind units**: Divide by 4 for spacing (e.g., 20px → 5, 32px → 8).
+
+**Font sizes**: Use predefined Tailwind classes when available (text-xl for 20px, text-2xl for 24px). Use `[Xpx]` only for non-standard sizes.
+
+**Keep `[Xpx]` for**: Line-height values (e.g., leading-[20px]) and custom breakpoints.
+
+**Border radius mapping**: 4px→rounded, 6px→rounded-md, 8px→rounded-lg, 12px→rounded-xl, 16px→rounded-2xl, 24px→rounded-3xl.
+
+**Use `[Xpx]` only when**: No Tailwind equivalent exists or for custom breakpoints.
+
+**Remove unnecessary classes**: box-border, content-stretch, shrink-0, relative, overflow-clip → overflow-hidden, text-nowrap → whitespace-nowrap, leading-[0] → leading-none.
+
 ## Responsive Design
 
 ### Mobile-First Approach
